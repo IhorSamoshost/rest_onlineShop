@@ -14,7 +14,6 @@ import javax.persistence.Table;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-// DB Entity
 public class User {
     @Id
     @Column(name = "account_id")

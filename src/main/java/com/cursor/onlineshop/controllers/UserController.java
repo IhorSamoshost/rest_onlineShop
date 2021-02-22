@@ -5,15 +5,11 @@ import com.cursor.onlineshop.entities.user.Account;
 import com.cursor.onlineshop.entities.user.UserPermission;
 import com.cursor.onlineshop.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +18,6 @@ import java.util.List;
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
 public class UserController {
-    private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
     @GetMapping

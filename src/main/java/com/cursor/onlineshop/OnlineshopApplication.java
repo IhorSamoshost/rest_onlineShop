@@ -30,14 +30,14 @@ public class OnlineshopApplication {
 	}
 
 
-	@PostConstruct
-	public void addUsers() throws AccessDeniedException {
-		var accountDto1 = new CreateAccountDto("igor", encoder.encode("pass"),
-				"jkgfg@fhjf.com", Set.of(UserPermission.ROLE_ADMIN, UserPermission.ROLE_USER));
-		userService.registerWithRole(accountDto1);
-		var accountDto2 = new CreateAccountDto("ivan", encoder.encode("word"),
-				"jdsfhdfhs@fhjf.com", Set.of(UserPermission.ROLE_USER));
-		userService.registerWithRole(accountDto2);
-	}
+//	@PostConstruct
+//	public void addUsers() throws AccessDeniedException {
+//		var accountDto1 = new CreateAccountDto("igor", encoder.encode("pass"),
+//				"jkgfg@fhjf.com", Set.of(UserPermission.ROLE_ADMIN, UserPermission.ROLE_USER));
+//		userService.registerWithRole(accountDto1);
+//		var accountDto2 = new CreateAccountDto("ivan", encoder.encode("word"),
+//				"jdsfhdfhs@fhjf.com", Set.of(UserPermission.ROLE_USER));
+//		userService.registerWithRole(accountDto2);
+//	}
 
 }

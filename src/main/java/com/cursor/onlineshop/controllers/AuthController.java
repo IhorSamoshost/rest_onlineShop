@@ -52,7 +52,6 @@ public class AuthController {
         return ResponseEntity.ok(jwt);
     }
 
-
     @Data
     public static class AuthenticationRequest {
         private String userName;

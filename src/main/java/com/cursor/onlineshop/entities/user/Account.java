@@ -27,7 +27,6 @@ public class Account implements UserDetails {
     private String email;
     @ElementCollection(targetClass = UserPermission.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-//    @ManyToMany(fetch = FetchType.EAGER)
     private Set<UserPermission> permissions;
 
     public Account(String username, String password, String email) {
