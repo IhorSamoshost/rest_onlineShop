@@ -1,0 +1,81 @@
+package com.cursor.onlineshop.security;
+
+import com.cursor.onlineshop.services.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.Collections;
+import java.util.Set;
+
+@Configuration
+@EnableJpaRepositories("com.cursor.onlineshop")
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+    private final UserService userService;
+    private final JwtRequestFilter jwtRequestFilter;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/health").permitAll()
+                .antMatchers("/auth/login", "/auth/register").anonymous()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .and()
+                .logout().permitAll().and()
+//                .exceptionHandling().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService);
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SPRING_WEB)
+                .produces(Set.of(MediaType.APPLICATION_JSON_VALUE))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.cursor.onlineshop"))
+                .build().apiInfo(apiInfo());
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfo("Cursor team project #3 \"Online shop\"", "REST API description", "1.0",
+                null, null, null, null,
+                Collections.emptyList());
+    }
+}

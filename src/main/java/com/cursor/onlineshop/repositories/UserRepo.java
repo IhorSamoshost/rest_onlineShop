@@ -1,4 +1,7 @@
 package com.cursor.onlineshop.repositories;
 
-public interface UserRepo {
+import com.cursor.onlineshop.entities.user.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepo extends JpaRepository<User, String> {
 }
