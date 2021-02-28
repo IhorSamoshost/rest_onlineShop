@@ -5,7 +5,9 @@ import com.cursor.onlineshop.security.JwtUtils;
 import com.cursor.onlineshop.services.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +34,7 @@ public class AuthController {
         return ResponseEntity.ok(jwt);
     }
 
-    @PostMapping(value = "/register")
+    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createUserAccount(@RequestBody CreateAccountDto createAccountDto)
             throws AccessDeniedException {
         var newAccount = userService.registerUser(createAccountDto);
@@ -58,8 +60,3 @@ public class AuthController {
         private String password;
     }
 }
-// login -> return JWT
-// createUser
-
-// getUserInfo -> return fName, lName, age, phoneNumber
-// editUser -> edit fName, lName, age or phoneNumber

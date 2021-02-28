@@ -74,7 +74,6 @@ public class UserService implements UserDetailsService {
                 foundUser.getAge(), foundUser.getPhoneNumber());
     }
 
-
     public List<UserDto> getAll() {
         List<User> usersFromDb = userRepo.findAll();
         List<Account> accountsFromDb = accountRepo.findAll();
@@ -104,6 +103,10 @@ public class UserService implements UserDetailsService {
         return new UserDto(editedAccount.getAccountId(), editedAccount.getUsername(), editedAccount.getPassword(),
                 editedAccount.getEmail(), editedAccount.getPermissions(), editedUser.getFirstName(),
                 editedUser.getLastName(), editedUser.getAge(), editedUser.getPhoneNumber());
+    }
+
+    public Account getByUsername(String userName) {
+        return accountRepo.findByUsername(userName).orElseThrow();
     }
 
     @Override
