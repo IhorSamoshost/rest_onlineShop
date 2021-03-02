@@ -20,10 +20,10 @@ public class User {
     @Column(name = "account_id")
     private String accountId;
 
-    @Column(name = "fName")
+    @Column(name = "fist_name")
     private String firstName;
 
-    @Column(name = "lName")
+    @Column(name = "last_name")
     private String lastName;
 
     @Column(name = "age")
