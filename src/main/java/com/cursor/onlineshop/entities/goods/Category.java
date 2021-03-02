@@ -4,33 +4,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.UUID;
 
-// DB Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category {
-
     @Id
-    @OneToOne
-    @JoinColumn(name = "category_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "category_id")
     private String categoryId;
-
-    @Column(name = "name")
+    @Column(name = "category_name")
     private String name;
-
-    @Column(name = "description")
+    @Column(name = "category_description")
     private String description;
-
-    @Column(name = "image")
+    @Column(name = "category_image")
     private String image;
 
-    public Category(String name, String description, String image ) {
+    public Category(String name, String description, String image) {
         this.categoryId = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;

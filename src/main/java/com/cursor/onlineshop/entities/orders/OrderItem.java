@@ -1,36 +1,24 @@
 package com.cursor.onlineshop.entities.orders;
 
-import lombok.AllArgsConstructor;
+import com.cursor.onlineshop.entities.goods.Item;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-// DB Entity
-@Entity
-@Table(name = "order_item")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "order_items")
 public class OrderItem {
     @Id
-    @ManyToOne
-    @JoinColumn(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_item_id")
     private String orderItemId;
-
-    @OneToOne
-    @JoinColumn(name = "item_id")
-    private String itemId;
-
-    @Column(name = "quantity")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private Item item;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Order order;
     private int quantity;
-
-    @Column(name = "price")
     private BigDecimal price;
-
-    public OrderItem(String orderItemId) {
-        this.orderItemId = orderItemId;
-    }
 }

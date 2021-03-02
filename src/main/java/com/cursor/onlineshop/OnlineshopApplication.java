@@ -17,27 +17,25 @@ import java.util.Set;
 @EnableSwagger2
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class OnlineshopApplication {
-	private final UserService userService;
-	private final BCryptPasswordEncoder encoder;
+    private final UserService userService;
+    private final BCryptPasswordEncoder encoder;
 
-	public OnlineshopApplication(UserService userService, BCryptPasswordEncoder encoder) {
-		this.userService = userService;
-		this.encoder = encoder;
-	}
+    public OnlineshopApplication(UserService userService, BCryptPasswordEncoder encoder) {
+        this.userService = userService;
+        this.encoder = encoder;
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(OnlineshopApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(OnlineshopApplication.class, args);
+    }
 
-
-//	@PostConstruct
-//	public void addUsers() throws AccessDeniedException {
-//		var accountDto1 = new CreateAccountDto("igor", encoder.encode("pass"),
-//				"jkgfg@fhjf.com", Set.of(UserPermission.ROLE_ADMIN, UserPermission.ROLE_USER));
-//		userService.registerWithRole(accountDto1);
-//		var accountDto2 = new CreateAccountDto("ivan", encoder.encode("word"),
-//				"jdsfhdfhs@fhjf.com", Set.of(UserPermission.ROLE_USER));
-//		userService.registerWithRole(accountDto2);
-//	}
-
+    @PostConstruct
+    public void addUsers() throws AccessDeniedException {
+        var accountDto1 = new CreateAccountDto("admin", encoder.encode("admin"),
+                "jkgfg@fhjf.com", Set.of(UserPermission.ROLE_ADMIN, UserPermission.ROLE_USER));
+        userService.registerWithRole(accountDto1);
+//        var accountDto2 = new CreateAccountDto("user", encoder.encode("user"),
+//                "jdsfhdfhs@fhjf.com");
+//        userService.registerUser(accountDto2);
+    }
 }

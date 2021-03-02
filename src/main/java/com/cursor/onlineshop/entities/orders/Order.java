@@ -1,79 +1,40 @@
 package com.cursor.onlineshop.entities.orders;
 
+import com.cursor.onlineshop.entities.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
-import java.util.UUID;
 
-// DB Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "order")
-public class Order implements OrderColumn {
+@Table(name = "orders")
+public class Order {
     @Id
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
     private String orderId;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private String accountId;
-
-    @Column(name = "order_date")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private User user;
+    @Column(name = "date")
     private Date orderDate;
-
     @Column(name = "order_price")
     private BigDecimal orderPrice;
-
-    @Enumerated(EnumType.STRING)
-    @OneToOne(mappedBy = "order")
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<OrderItem> orderItems;
 
-    public Order(Date orderDate, BigDecimal orderPrice, Set<OrderItem> orderItems) {
-        this.orderId =  UUID.randomUUID().toString();
-        this.accountId = UUID.randomUUID().toString();
-        this.orderDate = orderDate;
-        this.orderPrice = orderPrice;
-        this.orderItems = orderItems;
+    public void addOrderItem(OrderItem orderItem) {
+       orderItems.add(orderItem);
+        orderItem.setOrder(this);
     }
 
-    @Override
-    public String name() {
-        return orderId;
-    }
-
-    @Override
-    public boolean nullable() {
-        return true;
-    }
-
-    @Override
-    public boolean insertable() {
-        return true;
-    }
-
-    @Override
-    public boolean updatable() {
-        return true;
-    }
-
-    @Override
-    public String columnDefinition() {
-        return null;
-    }
-
-    @Override
-    public Class<? extends Annotation> annotationType() {
-        return null;
+    public void removeOrderItem(OrderItem orderItem) {
+        orderItems.remove(orderItem);
+        orderItem.setOrder(null);
     }
 }

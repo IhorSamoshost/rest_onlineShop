@@ -5,44 +5,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.UUID;
 
-// DB Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "item")
+@Table(name = "items")
 public class Item {
-
     @Id
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_id")
     private String itemId;
-
-    @Column(name = "name")
+    @Column(name = "item_name")
     private String name;
-
-    @Column(name = "description")
+    @Column(name = "item_description")
     private String description;
-
-    @Column(name = "price")
-    private String price;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private String categoryId;
-
+    private BigDecimal price;
     @Column(name = "amount_in_stock")
     private int amountInStock;
+    private String categoryId;
 
-    public Item(String name, String description, String price, int amountInStock) {
+    public Item(String name, String description, BigDecimal price, int amountInStock, String categoryId) {
         this.itemId = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
         this.price = price;
         this.amountInStock = amountInStock;
+        this.categoryId = categoryId;
     }
 }

@@ -6,6 +6,7 @@ import com.cursor.onlineshop.services.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/media")
 @RequiredArgsConstructor
+@Secured("ROLE_ADMIN")
 public class FileController {
 
     private final FileService fileService;

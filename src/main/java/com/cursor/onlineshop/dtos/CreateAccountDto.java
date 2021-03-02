@@ -4,18 +4,24 @@ import com.cursor.onlineshop.entities.user.Account;
 import com.cursor.onlineshop.entities.user.UserPermission;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class CreateAccountDto {
     private String username;
     private String password;
     private String email;
     private Set<UserPermission> permissions;
+
+    public CreateAccountDto(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
     private Account toEntity() {
         return new Account(username, password, email);

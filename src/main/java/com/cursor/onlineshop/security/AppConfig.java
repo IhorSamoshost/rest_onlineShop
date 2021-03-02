@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @Configuration
-@EnableJpaRepositories("com.cursor.onlineshop")
+@EnableJpaRepositories(basePackages = "com.cursor.onlineshop", considerNestedRepositories = true)
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
@@ -37,13 +37,14 @@ public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/health").permitAll()
-                .antMatchers("/auth/login", "/auth/register").anonymous()
+                .antMatchers("/auth/login", "/auth/register", "/auth/regadmin").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
+//                .loginPage("/auth/login")
                 .and()
-                .logout().permitAll().and()
-//                .exceptionHandling().disable()
+//                .logout().permitAll().and()
+                .exceptionHandling().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

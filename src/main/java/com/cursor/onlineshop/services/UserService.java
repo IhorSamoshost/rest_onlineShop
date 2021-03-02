@@ -35,7 +35,8 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDetails login(String userName, String password) throws AccessDeniedException {
-        var account = accountRepo.findByUsername(userName).orElseThrow(() -> ACCESS_DENIED);
+        var account = accountRepo.getAccountByUsername(userName);
+//                .findByUsername(userName).orElseThrow(() -> ACCESS_DENIED);
         if (!encoder.matches(password, account.getPassword())) throw ACCESS_DENIED;
         return account;
     }
@@ -46,7 +47,7 @@ public class UserService implements UserDetailsService {
         }
         Account newAccount = accountRepo.save(new Account(createAccountDto.getUsername(),
                 encoder.encode(createAccountDto.getPassword()), createAccountDto.getEmail()));
-        User newUser = userRepo.save(new User(newAccount.getAccountId()));
+        userRepo.save(new User(newAccount.getAccountId()));
         return newAccount;
     }
 
@@ -57,7 +58,7 @@ public class UserService implements UserDetailsService {
         Account newAccount = accountRepo.save(new Account(createAccountDto.getUsername(),
                 encoder.encode(createAccountDto.getPassword()), createAccountDto.getEmail(),
                 createAccountDto.getPermissions()));
-        User newUser = userRepo.save(new User(newAccount.getAccountId()));
+        userRepo.save(new User(newAccount.getAccountId()));
         return newAccount;
     }
 
@@ -109,9 +110,12 @@ public class UserService implements UserDetailsService {
         return accountRepo.findByUsername(userName).orElseThrow();
     }
 
+    public User getUserByAccount(Account account) {return userRepo.getOne(account.getAccountId());}
+
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         return accountRepo.findByUsername(userName).orElseThrow();
+//        return accountRepo.getAccountByUsername(userName);
     }
 }
 
