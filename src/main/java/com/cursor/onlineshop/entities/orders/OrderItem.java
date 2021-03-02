@@ -15,9 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class OrderItem {
     @Id
-    @ManyToOne
-    @JoinColumn(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_item_id")
     private String orderItemId;
 
     @OneToOne

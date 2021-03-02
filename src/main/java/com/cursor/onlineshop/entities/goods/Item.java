@@ -16,12 +16,10 @@ import java.util.UUID;
 public class Item {
 
     @Id
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_id")
     private String itemId;
 
-    @Column(name = "name")
+    @Column(name = "item_name")
     private String name;
 
     @Column(name = "description")
@@ -30,9 +28,7 @@ public class Item {
     @Column(name = "price")
     private String price;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "category_id")
     private String categoryId;
 
     @Column(name = "amount_in_stock")

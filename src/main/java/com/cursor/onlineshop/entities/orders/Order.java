@@ -19,14 +19,10 @@ import java.util.UUID;
 @Table(name = "order")
 public class Order implements OrderColumn {
     @Id
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
     private String orderId;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+   @Column(name = "account_id")
     private String accountId;
 
     @Column(name = "order_date")
