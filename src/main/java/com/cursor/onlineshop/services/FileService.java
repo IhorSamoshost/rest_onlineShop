@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -102,5 +103,9 @@ public class FileService {
             e.printStackTrace();
         }
         fileRepo.deleteById(fileId);
+    }
+
+    public List<FileData> getAll() {
+        return fileRepo.findAll();
     }
 }
