@@ -37,13 +37,11 @@ public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/health").permitAll()
-                .antMatchers("/auth/login", "/auth/register", "/auth/regadmin").anonymous()
+                .antMatchers("/auth/*").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-//                .loginPage("/auth/login")
                 .and()
-//                .logout().permitAll().and()
                 .exceptionHandling().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

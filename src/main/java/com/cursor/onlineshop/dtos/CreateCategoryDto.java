@@ -4,7 +4,6 @@ import com.cursor.onlineshop.entities.goods.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +13,7 @@ public class CreateCategoryDto {
     private String description;
     private String image;
 
-    public Category toEntity(){
+    public Category toEntity() {
         return new Category(name, description, image);
     }
 }

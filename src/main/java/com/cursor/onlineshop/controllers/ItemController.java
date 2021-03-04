@@ -7,6 +7,7 @@ import com.cursor.onlineshop.services.ItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("items")
+@Secured("ROLE_ADMIN")
 public class ItemController {
 
     private final ItemService itemService;
@@ -35,8 +37,20 @@ public class ItemController {
 
     @PutMapping("/{itemId}")
     public ResponseEntity<Item> editItem(@PathVariable String itemId, @RequestBody ItemDto itemDto) {
-        itemDto.setItemId(itemId);
-        return new ResponseEntity<>(itemService.update(itemDto), HttpStatus.OK);
+        ItemDto editedItemDto = itemService.getById(itemId).toDto();
+        editedItemDto.setItemId(itemId);
+        if (itemDto.getName() != null) {
+            editedItemDto.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null) {
+            editedItemDto.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getCategoryId() != null) {
+            editedItemDto.setCategoryId(itemDto.getCategoryId());
+        }
+        editedItemDto.setPrice(itemDto.getPrice());
+        editedItemDto.setAmountInStock(itemDto.getAmountInStock());
+        return new ResponseEntity<>(itemService.update(editedItemDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{itemId}")

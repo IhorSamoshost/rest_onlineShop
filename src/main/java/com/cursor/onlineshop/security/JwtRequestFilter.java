@@ -1,8 +1,5 @@
 package com.cursor.onlineshop.security;
 import com.cursor.onlineshop.services.UserService;
-import io.micrometer.core.lang.NonNullApi;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-//@EqualsAndHashCode(callSuper = true)
-//@Data
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;

@@ -1,6 +1,5 @@
 package com.cursor.onlineshop.dtos;
 
-import com.cursor.onlineshop.entities.user.Account;
 import com.cursor.onlineshop.entities.user.UserPermission;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,18 +15,4 @@ public class CreateAccountDto {
     private String password;
     private String email;
     private Set<UserPermission> permissions;
-
-    public CreateAccountDto(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-
-    private Account toEntity() {
-        return new Account(username, password, email);
-    }
-
-    private Account toEntityWithRole() {
-        return new Account(username, password, email, permissions);
-    }
 }

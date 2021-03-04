@@ -20,7 +20,7 @@ public class CategoryDto {
         this.image = image;
     }
 
-    public Category toEntity(){
+    public Category toEntity() {
         return new Category(categoryId, name, description, image);
     }
 }

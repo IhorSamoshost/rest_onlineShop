@@ -3,12 +3,15 @@ package com.cursor.onlineshop.controllers;
 import com.cursor.onlineshop.dtos.UserDto;
 import com.cursor.onlineshop.entities.user.Account;
 import com.cursor.onlineshop.entities.user.UserPermission;
+import com.cursor.onlineshop.security.JwtUtils;
 import com.cursor.onlineshop.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +23,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtTokenUtil;
 
     @GetMapping
     @Secured("ROLE_ADMIN")
@@ -47,15 +52,62 @@ public class UserController {
             value = "/{accountId}",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<UserDto> editUser(@PathVariable(value = "accountId") String accountId,
-                                            @RequestBody UserDto editedUserDto) {
-        Account accountToEdit = userService.getAccountById(accountId);
-        String accountToEditUsername = accountToEdit.getUsername();
+    public ResponseEntity<String> editUser(@PathVariable(value = "accountId") String accountId,
+                                           @RequestBody UserDto editedUserDto) {
+        UserDto requestedUserDto = userService.getUserInfoById(accountId);
         Account requester = (Account) userService
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        if (requester.getUsername().equals(accountToEditUsername)
+        if (requester.getUsername().equals(requestedUserDto.getUsername())) {
+            modifyUserDto(accountId, editedUserDto, requestedUserDto);
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            editedUserDto.getUsername(), editedUserDto.getPassword()));
+            String jwt = jwtTokenUtil.generateToken(
+                    new Account(editedUserDto.getUsername(), editedUserDto.getPassword(),
+                            editedUserDto.getEmail(), editedUserDto.getPermissions()));
+            return ResponseEntity.ok(jwt);
+        }
+        if (requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
+            modifyUserDto(accountId, editedUserDto, requestedUserDto);
+            return ResponseEntity.ok("User is updated");
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
+    private void modifyUserDto(String accountId, UserDto editedUserDto, UserDto requestedUserDto) {
+        editedUserDto.setAccountId(accountId);
+        if (editedUserDto.getUsername() == null) {
+            editedUserDto.setUsername(requestedUserDto.getUsername());
+        }
+        if (editedUserDto.getEmail() == null) {
+            editedUserDto.setEmail(requestedUserDto.getEmail());
+        }
+        if (editedUserDto.getPermissions() == null) {
+            editedUserDto.setPermissions(requestedUserDto.getPermissions());
+        }
+        if (editedUserDto.getFirstName() == null) {
+            editedUserDto.setFirstName(requestedUserDto.getFirstName());
+        }
+        if (editedUserDto.getLastName() == null) {
+            editedUserDto.setLastName(requestedUserDto.getLastName());
+        }
+        if (editedUserDto.getAge() == null) {
+            editedUserDto.setAge(requestedUserDto.getAge());
+        }
+        if (editedUserDto.getPhoneNumber() == null) {
+            editedUserDto.setPhoneNumber(requestedUserDto.getPhoneNumber());
+        }
+        userService.update(editedUserDto);
+    }
+
+    @DeleteMapping(value = "/{accountId}")
+    public ResponseEntity<String> delete(@PathVariable(value = "accountId") String accountId) {
+        String accountToDeleteUsername = userService.getAccountById(accountId).getUsername();
+        Account requester = (Account) userService
+                .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (requester.getUsername().equals(accountToDeleteUsername)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
-            return new ResponseEntity<>(userService.update(editedUserDto), HttpStatus.OK);
+            return new ResponseEntity<>(userService.delete(accountId), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }

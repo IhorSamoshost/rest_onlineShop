@@ -7,6 +7,7 @@ import com.cursor.onlineshop.services.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/categories")
+@Secured("ROLE_ADMIN")
 public class CategoryController {
 
     private final CategoryService categoryService;

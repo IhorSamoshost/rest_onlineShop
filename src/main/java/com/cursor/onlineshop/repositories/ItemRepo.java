@@ -1,6 +1,5 @@
 package com.cursor.onlineshop.repositories;
 
-import com.cursor.onlineshop.entities.goods.Category;
 import com.cursor.onlineshop.entities.goods.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 

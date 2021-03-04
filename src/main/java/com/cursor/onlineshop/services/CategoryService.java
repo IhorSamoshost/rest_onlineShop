@@ -6,9 +6,11 @@ import com.cursor.onlineshop.entities.goods.Category;
 import com.cursor.onlineshop.repositories.CategoryRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @AllArgsConstructor
 @Service
 public class CategoryService {
@@ -24,15 +26,15 @@ public class CategoryService {
     }
 
     public String delete(String deletedCategoryId) {
-        Category categoryToDelete = categoryRepo.getOne(deletedCategoryId);
+        Category categoryToDelete = categoryRepo.findByCategoryId(deletedCategoryId).orElseThrow();
         categoryRepo.delete(categoryToDelete);
-        return categoryRepo.getOne(deletedCategoryId) == null ?
-                String.format("Category with id=%s succesfully deleted", deletedCategoryId) :
-                String.format("Category with id=%s not deleted", deletedCategoryId);
+        return categoryRepo.findByCategoryId(deletedCategoryId).isPresent() ?
+                String.format("Category with id=%s not deleted", deletedCategoryId) :
+                String.format("Category with id=%s succesfully deleted", deletedCategoryId);
     }
 
     public Category getById(String categoryId) {
-        return categoryRepo.getOne(categoryId);
+        return categoryRepo.findByCategoryId(categoryId).orElseThrow();
     }
 
     public List<Category> getAll() {

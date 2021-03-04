@@ -1,5 +1,6 @@
 package com.cursor.onlineshop.entities.goods;
 
+import com.cursor.onlineshop.dtos.ItemDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,14 +25,19 @@ public class Item {
     private BigDecimal price;
     @Column(name = "amount_in_stock")
     private int amountInStock;
-    private String categoryId;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private Category category;
 
-    public Item(String name, String description, BigDecimal price, int amountInStock, String categoryId) {
+    public Item(String name, String description, BigDecimal price, int amountInStock, Category category) {
         this.itemId = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
         this.price = price;
         this.amountInStock = amountInStock;
-        this.categoryId = categoryId;
+        this.category = category;
+    }
+
+    public ItemDto toDto() {
+        return new ItemDto(itemId, name, description, price.doubleValue(), amountInStock, category.getCategoryId());
     }
 }

@@ -29,13 +29,13 @@ public class OnlineshopApplication {
         SpringApplication.run(OnlineshopApplication.class, args);
     }
 
-    @PostConstruct
-    public void addUsers() throws AccessDeniedException {
-        var accountDto1 = new CreateAccountDto("admin", encoder.encode("admin"),
-                "jkgfg@fhjf.com", Set.of(UserPermission.ROLE_ADMIN, UserPermission.ROLE_USER));
-        userService.registerWithRole(accountDto1);
-//        var accountDto2 = new CreateAccountDto("user", encoder.encode("user"),
-//                "jdsfhdfhs@fhjf.com");
+//    @PostConstruct
+//    public void addUsers() throws AccessDeniedException {
+//        var accountDto1 = new CreateAccountDto("admin", "admin",
+//                "jkgfg@fhjf.com", Set.of(UserPermission.ROLE_ADMIN, UserPermission.ROLE_USER));
+//        userService.registerWithRole(accountDto1);
+//        var accountDto2 = new CreateAccountDto("user", "user",
+//                "12345@fhjf.com");
 //        userService.registerUser(accountDto2);
-    }
+//    }
 }

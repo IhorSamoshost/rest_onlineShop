@@ -1,18 +1,16 @@
 package com.cursor.onlineshop.entities.user;
 
 import com.cursor.onlineshop.entities.orders.Order;
-import com.cursor.onlineshop.entities.orders.OrderItem;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class User {
@@ -20,7 +18,7 @@ public class User {
     @Column(name = "account_id")
     private String accountId;
 
-    @Column(name = "fist_name")
+    @Column(name = "first_name")
     private String firstName;
 
     @Column(name = "last_name")
@@ -31,7 +29,7 @@ public class User {
 
     @Column(name = "phone_number")
     private String phoneNumber;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Order> orders;
 
@@ -55,5 +53,17 @@ public class User {
     public void removeOrder(Order order) {
         orders.remove(order);
         order.setUser(null);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "accountId='" + accountId + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", orders=" + orders +
+                '}';
     }
 }

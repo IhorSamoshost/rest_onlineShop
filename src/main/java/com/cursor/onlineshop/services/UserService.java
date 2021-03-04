@@ -6,6 +6,7 @@ import com.cursor.onlineshop.entities.user.Account;
 import com.cursor.onlineshop.entities.user.User;
 import com.cursor.onlineshop.repositories.AccountRepo;
 import com.cursor.onlineshop.repositories.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,6 +29,7 @@ public class UserService implements UserDetailsService {
     static AccessDeniedException REGISTER_DENIED =
             new AccessDeniedException("Such username already exists in DB! Try enter any other username!");
 
+    @Autowired
     public UserService(AccountRepo accountRepo, UserRepo userRepo, @Lazy BCryptPasswordEncoder encoder) {
         this.accountRepo = accountRepo;
         this.userRepo = userRepo;
@@ -35,8 +37,7 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDetails login(String userName, String password) throws AccessDeniedException {
-        var account = accountRepo.getAccountByUsername(userName);
-//                .findByUsername(userName).orElseThrow(() -> ACCESS_DENIED);
+        var account = accountRepo.findByUsername(userName).orElseThrow(() -> ACCESS_DENIED);
         if (!encoder.matches(password, account.getPassword())) throw ACCESS_DENIED;
         return account;
     }
@@ -63,12 +64,12 @@ public class UserService implements UserDetailsService {
     }
 
     public Account getAccountById(String accountId) {
-        return accountRepo.getOne(accountId);
+        return accountRepo.findById(accountId).orElseThrow();
     }
 
     public UserDto getUserInfoById(String accountId) {
-        User foundUser = userRepo.getOne(accountId);
-        Account foundAccount = accountRepo.getOne(accountId);
+        User foundUser = userRepo.findById(accountId).orElseThrow();
+        Account foundAccount = accountRepo.findById(accountId).orElseThrow();
         return new UserDto(accountId, foundAccount.getUsername(), foundAccount.getPassword(),
                 foundAccount.getEmail(), foundAccount.getPermissions(),
                 foundUser.getFirstName(), foundUser.getLastName(),
@@ -106,16 +107,26 @@ public class UserService implements UserDetailsService {
                 editedUser.getLastName(), editedUser.getAge(), editedUser.getPhoneNumber());
     }
 
+    public String delete(String deletedAccountId) {
+        accountRepo.deleteById(deletedAccountId);
+        userRepo.deleteById(deletedAccountId);
+        return accountRepo.findById(deletedAccountId).isPresent()
+                || userRepo.findById(deletedAccountId).isPresent() ?
+                String.format("Somthing went wrong, user with id=%s is not deleted!", deletedAccountId) :
+                String.format("User with id=%s is succesfully deleted", deletedAccountId);
+    }
+
     public Account getByUsername(String userName) {
         return accountRepo.findByUsername(userName).orElseThrow();
     }
 
-    public User getUserByAccount(Account account) {return userRepo.getOne(account.getAccountId());}
+    public User getUserByAccount(Account account) {
+        return userRepo.findById(account.getAccountId()).orElseThrow();
+    }
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         return accountRepo.findByUsername(userName).orElseThrow();
-//        return accountRepo.getAccountByUsername(userName);
     }
 }
 

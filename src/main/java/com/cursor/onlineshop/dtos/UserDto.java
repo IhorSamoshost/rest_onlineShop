@@ -1,6 +1,5 @@
 package com.cursor.onlineshop.dtos;
 
-import com.cursor.onlineshop.entities.user.User;
 import com.cursor.onlineshop.entities.user.UserPermission;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +18,4 @@ public class UserDto {
     private String lastName;
     private Integer age;
     private String phoneNumber;
-
-    private User toEntity() {
-        return new User(accountId, firstName, lastName, age, phoneNumber);
-    }
 }
