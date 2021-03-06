@@ -10,7 +10,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @Entity
 @Table(name = "orders")
@@ -40,5 +41,16 @@ public class Order {
     public void dismissOrderItems() {
         orderItems.forEach(oi->oi.setOrder(null));
         orderItems.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId='" + orderId + '\'' +
+                ", user={" + user.getAccountId() + " " + user.getFirstName() + " " + user.getLastName() + "}" +
+                ", orderDate=" + orderDate +
+                ", orderPrice=" + orderPrice +
+                ", orderItems=" + orderItems +
+                '}';
     }
 }
