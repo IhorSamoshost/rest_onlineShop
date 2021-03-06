@@ -37,20 +37,8 @@ public class ItemController {
 
     @PutMapping("/{itemId}")
     public ResponseEntity<Item> editItem(@PathVariable String itemId, @RequestBody ItemDto itemDto) {
-        ItemDto editedItemDto = itemService.getById(itemId).toDto();
-        editedItemDto.setItemId(itemId);
-        if (itemDto.getName() != null) {
-            editedItemDto.setName(itemDto.getName());
-        }
-        if (itemDto.getDescription() != null) {
-            editedItemDto.setDescription(itemDto.getDescription());
-        }
-        if (itemDto.getCategoryId() != null) {
-            editedItemDto.setCategoryId(itemDto.getCategoryId());
-        }
-        editedItemDto.setPrice(itemDto.getPrice());
-        editedItemDto.setAmountInStock(itemDto.getAmountInStock());
-        return new ResponseEntity<>(itemService.update(editedItemDto), HttpStatus.OK);
+        itemDto.setItemId(itemId);
+        return new ResponseEntity<>(itemService.update(itemDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{itemId}")

@@ -52,6 +52,7 @@ public class OrderController {
     @PutMapping("/{orderId}")
     public ResponseEntity<Order> editOrder(@PathVariable String orderId, @RequestBody OrderDto updatedOrderDto)
             throws ParseException {
+        updatedOrderDto.setOrderId(orderId);
         Order requestedOrder = orderService.getById(orderId);
         String requestedOrderUserName = userService
                 .getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
@@ -59,7 +60,6 @@ public class OrderController {
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedOrderUserName)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
-            updatedOrderDto.setOrderId(orderId);
             return new ResponseEntity<>(orderService.update(updatedOrderDto), HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -80,7 +80,7 @@ public class OrderController {
     }
 
     @PostMapping("/exec/{orderId}")
-    public void executeOrder(@PathVariable String orderId) {
+    public ResponseEntity<String> executeOrder(@PathVariable String orderId) {
         Order requestedOrder = orderService.getById(orderId);
         String requestedOrderUserName = userService
                 .getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
@@ -88,7 +88,8 @@ public class OrderController {
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedOrderUserName)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
-            orderService.exec(orderId);
+            return new ResponseEntity<>(orderService.exec(orderId), HttpStatus.OK);
         }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }

@@ -89,21 +89,24 @@ public class UserService implements UserDetailsService {
                 }
             }
             assert uAccount != null;
-            UserDto userDto = new UserDto(uAccount.getAccountId(), uAccount.getUsername(), uAccount.getPassword(),
-                    uAccount.getEmail(), uAccount.getPermissions(), u.getFirstName(), u.getLastName(),
-                    u.getAge(), u.getPhoneNumber());
+            UserDto userDto = new UserDto(uAccount.getAccountId(), uAccount.getUsername(),
+                    uAccount.getPassword(), uAccount.getEmail(), uAccount.getPermissions(),
+                    u.getFirstName(), u.getLastName(), u.getAge(), u.getPhoneNumber());
             userDtos.add(userDto);
         }
         return userDtos;
     }
 
     public UserDto update(UserDto editedUserDto) {
-        Account editedAccount = accountRepo.save(new Account(editedUserDto.getAccountId(), editedUserDto.getUsername(),
-                encoder.encode(editedUserDto.getPassword()), editedUserDto.getEmail(), editedUserDto.getPermissions()));
-        User editedUser = userRepo.save(new User(editedUserDto.getAccountId(), editedUserDto.getFirstName(),
-                editedUserDto.getLastName(), editedUserDto.getAge(), editedUserDto.getPhoneNumber()));
-        return new UserDto(editedAccount.getAccountId(), editedAccount.getUsername(), editedAccount.getPassword(),
-                editedAccount.getEmail(), editedAccount.getPermissions(), editedUser.getFirstName(),
+        Account editedAccount = accountRepo.save(new Account(editedUserDto.getAccountId(),
+                editedUserDto.getUsername(), encoder.encode(editedUserDto.getPassword()),
+                editedUserDto.getEmail(), editedUserDto.getPermissions()));
+        User editedUser = userRepo.save(new User(editedUserDto.getAccountId(),
+                editedUserDto.getFirstName(), editedUserDto.getLastName(),
+                editedUserDto.getAge(), editedUserDto.getPhoneNumber()));
+        return new UserDto(editedAccount.getAccountId(), editedAccount.getUsername(),
+                editedAccount.getPassword(), editedAccount.getEmail(),
+                editedAccount.getPermissions(), editedUser.getFirstName(),
                 editedUser.getLastName(), editedUser.getAge(), editedUser.getPhoneNumber());
     }
 

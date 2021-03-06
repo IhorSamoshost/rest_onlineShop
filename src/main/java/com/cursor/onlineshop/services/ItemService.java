@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Transactional
 @AllArgsConstructor
 @Service
 public class ItemService {
@@ -19,6 +18,7 @@ public class ItemService {
     private final ItemRepo itemRepo;
     private final CategoryService categoryService;
 
+    @Transactional
     public Item add(CreateItemDto newItemDto) {
         Item newItem = new Item(newItemDto.getName(), newItemDto.getDescription(),
                 BigDecimal.valueOf(newItemDto.getPrice()), newItemDto.getAmountInStock(),
@@ -27,10 +27,19 @@ public class ItemService {
     }
 
     public Item update(ItemDto updatedItemDto) {
-        Item updatedItem = new Item(updatedItemDto.getItemId(), updatedItemDto.getName(),
-                updatedItemDto.getDescription(), BigDecimal.valueOf(updatedItemDto.getPrice()),
-                updatedItemDto.getAmountInStock(), categoryService.getById(updatedItemDto.getCategoryId()));
-        return itemRepo.save(updatedItem);
+        Item editedItem = itemRepo.findByItemId(updatedItemDto.getItemId()).orElseThrow();
+        if (updatedItemDto.getName() != null) {
+            editedItem.setName(updatedItemDto.getName());
+        }
+        if (updatedItemDto.getDescription() != null) {
+            editedItem.setDescription(updatedItemDto.getDescription());
+        }
+        if (updatedItemDto.getCategoryId() != null) {
+            editedItem.setCategory(categoryService.getById(updatedItemDto.getCategoryId()));
+        }
+        editedItem.setPrice(BigDecimal.valueOf(updatedItemDto.getPrice()));
+        editedItem.setAmountInStock(updatedItemDto.getAmountInStock());
+        return itemRepo.save(editedItem);
     }
 
     public String delete(String deletedItemId) {
