@@ -45,7 +45,8 @@ public class FileService {
         FileData newFileData = new FileData(
                 store(file),
                 StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())),
-                userService.getByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).getAccountId()
+                userService.getByUsername(
+                        SecurityContextHolder.getContext().getAuthentication().getName()).getAccountId()
         );
         fileRepo.save(newFileData);
         return newFileData;

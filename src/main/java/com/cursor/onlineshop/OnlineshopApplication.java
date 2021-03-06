@@ -6,7 +6,6 @@ import com.cursor.onlineshop.services.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
@@ -18,11 +17,9 @@ import java.util.Set;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class OnlineshopApplication {
     private final UserService userService;
-    private final BCryptPasswordEncoder encoder;
 
-    public OnlineshopApplication(UserService userService, BCryptPasswordEncoder encoder) {
+    public OnlineshopApplication(UserService userService) {
         this.userService = userService;
-        this.encoder = encoder;
     }
 
     public static void main(String[] args) {
@@ -34,8 +31,7 @@ public class OnlineshopApplication {
 //        var accountDto1 = new CreateAccountDto("admin", "admin",
 //                "jkgfg@fhjf.com", Set.of(UserPermission.ROLE_ADMIN, UserPermission.ROLE_USER));
 //        userService.registerWithRole(accountDto1);
-//        var accountDto2 = new CreateAccountDto("user", "user",
-//                "12345@fhjf.com");
+//        var accountDto2 = new CreateAccountDto("user", "user", "12345@fhjf.com");
 //        userService.registerUser(accountDto2);
 //    }
 }
