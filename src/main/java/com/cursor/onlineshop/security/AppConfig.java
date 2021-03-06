@@ -37,7 +37,7 @@ public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/health").permitAll()
-                .antMatchers("/auth/*").anonymous()
+                .antMatchers("/auth/register", "/auth/regadmin", "/auth/login").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
