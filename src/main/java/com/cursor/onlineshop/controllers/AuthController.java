@@ -1,6 +1,7 @@
 package com.cursor.onlineshop.controllers;
 
 import com.cursor.onlineshop.dtos.CreateAccountDto;
+import com.cursor.onlineshop.entities.user.User;
 import com.cursor.onlineshop.security.JwtUtils;
 import com.cursor.onlineshop.services.UserService;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import java.nio.file.AccessDeniedException;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    // empty line
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtTokenUtil;
@@ -30,30 +33,34 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         auth.getUsername(), auth.getPassword()));
-        var userDetails = userService.login(auth.getUsername(), auth.getPassword());
+        final UserDetails userDetails = userService.login(auth.getUsername(), auth.getPassword());
         String jwt = jwtTokenUtil.generateToken(userDetails);
+        // try to return token here as part of json string, or as part of header, don't simply put string in the body
         return ResponseEntity.ok(jwt);
     }
 
     @PostMapping(value = "/register")
     public ResponseEntity<String> createUserAccount(@RequestBody CreateAccountDto createAccountDto)
             throws AccessDeniedException {
-        var newAccount = userService.registerUser(createAccountDto);
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        createAccountDto.getUsername(), createAccountDto.getPassword()));
+        final UserDetails newAccount = userService.registerUser(createAccountDto);
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                createAccountDto.getUsername(),
+                createAccountDto.getPassword()
+        ));
         String jwt = jwtTokenUtil.generateToken(newAccount);
+        // try to return token here as part of json string, or as part of header, don't simply put string in the body
         return ResponseEntity.ok(jwt);
     }
 
     @PostMapping(value = "/regadmin")
     public ResponseEntity<String> createAdminAccount(@RequestBody CreateAccountDto createAccountDto)
             throws AccessDeniedException {
-        var newAccount = userService.registerWithRole(createAccountDto);
+        final UserDetails newAccount = userService.registerWithRole(createAccountDto);
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         createAccountDto.getUsername(), createAccountDto.getPassword()));
         String jwt = jwtTokenUtil.generateToken(newAccount);
+        // try to return token here as part of json string, or as part of header, don't simply put string in the body
         return ResponseEntity.ok(jwt);
     }
 

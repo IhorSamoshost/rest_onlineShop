@@ -21,29 +21,35 @@ import java.util.List;
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
+    // empty line
     private final OrderService orderService;
     private final UserService userService;
 
+    // add limit, offset and sort params
     @GetMapping
     @Secured("ROLE_ADMIN")
     public List<Order> getAll() {
         return orderService.getAll();
     }
 
+
+    // DON'T use 302 FOUND, it's redirection code. Use 200 instead
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable String orderId) {
         Order requestedOrder = orderService.getById(orderId);
-        String requestedOrderUserName = userService
-                .getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
+
+        // move this method to AuthenticationUtils class
+        String requestedOrderUserName = userService.getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
+
         Account requester = (Account) userService
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        if (requester.getUsername().equals(requestedOrderUserName)
-                || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
+        if (requester.getUsername().equals(requestedOrderUserName) || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
             return new ResponseEntity<>(requestedOrder, HttpStatus.FOUND);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
+    // Return ResponseEntity object
     @PostMapping
     public Order createOrder(@RequestBody CreateOrderDto newOrderDto) {
         return orderService.add(newOrderDto);
@@ -52,8 +58,15 @@ public class OrderController {
     @PutMapping("/{orderId}")
     public ResponseEntity<Order> editOrder(@PathVariable String orderId, @RequestBody OrderDto updatedOrderDto)
             throws ParseException {
+
+        // this line should be in service
         updatedOrderDto.setOrderId(orderId);
+
+        // this line should be in service
         Order requestedOrder = orderService.getById(orderId);
+
+        // move security checks to separate methods/class and throw exception there if something is wrong
+        // use @ControllerAdvice to process exceptions
         String requestedOrderUserName = userService
                 .getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
         Account requester = (Account) userService

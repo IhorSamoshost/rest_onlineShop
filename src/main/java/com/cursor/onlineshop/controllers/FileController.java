@@ -36,13 +36,14 @@ public class FileController {
     }
 
     @DeleteMapping(value = "/{mediaId}")
-    public ResponseEntity<Resource> deleteFile(@PathVariable("mediaId") String mediaId) throws FileNotFoundException {
+    public ResponseEntity<Void> deleteFile(@PathVariable("mediaId") String mediaId) throws FileNotFoundException {
         fileService.deleteFile(mediaId);
         return ResponseEntity.ok().build();
     }
 
+    // 1. Add the following params here: limit (10 by default), offset (0 by default) and sort (by category name by default)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FileData>> getAll() throws FileNotFoundException {
+    public ResponseEntity<List<FileData>> getAll() {
         return ResponseEntity.ok(fileService.getAll());
     }
 }

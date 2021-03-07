@@ -16,16 +16,13 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+    // empty line after class declaration
     private final UserDetailsService userDetailsService;
     private final JwtUtils jwtUtil;
 
     public JwtRequestFilter(UserService userDetailsService, JwtUtils jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
-    }
-
-    public UserDetailsService getUserDetailsService() {
-        return userDetailsService;
     }
 
     @Override

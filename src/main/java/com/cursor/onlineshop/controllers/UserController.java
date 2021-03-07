@@ -26,10 +26,14 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtTokenUtil;
 
+    // add limit, offset and sort params
     @GetMapping
     @Secured("ROLE_ADMIN")
     public ResponseEntity<List<UserDto>> getAllUsersInfo() {
         List<UserDto> usersDtos = userService.getAll();
+
+        // usersDtos could not be null, check userService.getAll(), it could be empty
+        // don't return NOT_FOUND here, return OK even if the list is empty
         return usersDtos != null
                 ? new ResponseEntity<>(usersDtos, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -39,12 +43,15 @@ public class UserController {
     public ResponseEntity<UserDto> getUserInfo(@PathVariable(value = "accountId") String accountId) {
         UserDto requestedUserDto = userService.getUserInfoById(accountId);
         String requestedUserName = requestedUserDto.getUsername();
+
+        // this check should be moved to separate methods
         Account requester = (Account) userService
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedUserName)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
             return new ResponseEntity<>(requestedUserDto, HttpStatus.OK);
         }
+
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
@@ -52,9 +59,14 @@ public class UserController {
             value = "/{accountId}",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> editUser(@PathVariable(value = "accountId") String accountId,
-                                           @RequestBody UserDto editedUserDto) {
+    public ResponseEntity<String> editUser(
+            @PathVariable(value = "accountId") String accountId,
+            @RequestBody UserDto editedUserDto
+    ) {
         UserDto requestedUserDto = userService.getUserInfoById(accountId);
+
+
+        // all security checks should be in another method
         Account requester = (Account) userService
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedUserDto.getUsername())) {
@@ -69,11 +81,14 @@ public class UserController {
         }
         if (requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
             modifyUserDto(accountId, editedUserDto, requestedUserDto);
+            // Don't add it "User is updated". If status 200, it means everything is fine
             return ResponseEntity.ok("User is updated");
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
+
+    // I would move this method to service class
     private void modifyUserDto(String accountId, UserDto editedUserDto, UserDto requestedUserDto) {
         editedUserDto.setAccountId(accountId);
         if (editedUserDto.getUsername() == null) {
@@ -103,10 +118,13 @@ public class UserController {
     @DeleteMapping(value = "/{accountId}")
     public ResponseEntity<String> delete(@PathVariable(value = "accountId") String accountId) {
         String accountToDeleteUsername = userService.getAccountById(accountId).getUsername();
+
+        // extract to separate method
         Account requester = (Account) userService
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(accountToDeleteUsername)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
+            // use return ResponseEntity.ok(userService.delete(accountId));
             return new ResponseEntity<>(userService.delete(accountId), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -29,6 +29,7 @@ import java.util.Set;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+    // keep empty line after class declaration
     private final UserService userService;
     private final JwtRequestFilter jwtRequestFilter;
 
@@ -40,9 +41,10 @@ public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
                 .antMatchers("/auth/register", "/auth/regadmin", "/auth/login").anonymous()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
+                .formLogin() // useless here as we don't have login form, because it's restful service
                 .and()
-                .exceptionHandling().disable()
+                .exceptionHandling().disable() // please add exception handling with @ControllerAdvice like here
+                // https://github.com/TarasLavrenyuk/MovieReview/blob/master/src/main/java/com/cursor/moviereview/exceptions/handlers/MovieResponseEntityExceptionHandler.java
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
