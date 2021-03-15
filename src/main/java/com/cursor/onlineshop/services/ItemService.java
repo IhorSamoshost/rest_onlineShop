@@ -3,6 +3,8 @@ package com.cursor.onlineshop.services;
 import com.cursor.onlineshop.dtos.CreateItemDto;
 import com.cursor.onlineshop.dtos.ItemDto;
 import com.cursor.onlineshop.entities.goods.Item;
+import com.cursor.onlineshop.exceptions.InvalidSortValueException;
+import com.cursor.onlineshop.repositories.ByCriteriaRepo;
 import com.cursor.onlineshop.repositories.ItemRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepo itemRepo;
+    private final ByCriteriaRepo byCriteriaRepo;
     private final CategoryService categoryService;
 
     @Transactional
@@ -51,10 +54,11 @@ public class ItemService {
     }
 
     public Item getById(String itemId) {
-        return itemRepo.findByItemId(itemId).orElseThrow();
+        return itemRepo.findByItemId(itemId).orElse(null);
     }
 
-    public List<Item> getAll() {
-        return itemRepo.findAll();
+    public List<Item> getAll(int limit, int offset, String category,
+                             String name, String description, Item.Sort sort) throws InvalidSortValueException {
+        return byCriteriaRepo.getItems(limit, offset, category, name, description, sort);
     }
 }

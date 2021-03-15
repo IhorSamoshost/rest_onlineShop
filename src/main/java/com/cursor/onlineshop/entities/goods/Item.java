@@ -1,9 +1,10 @@
 package com.cursor.onlineshop.entities.goods;
 
-import com.cursor.onlineshop.dtos.ItemDto;
+import com.cursor.onlineshop.exceptions.InvalidSortValueException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "items")
 public class Item {
+
     @Id
     @Column(name = "item_id")
     private String itemId;
@@ -37,7 +39,30 @@ public class Item {
         this.category = category;
     }
 
-    public ItemDto toDto() {
-        return new ItemDto(itemId, name, description, price.doubleValue(), amountInStock, category.getCategoryId());
+    public enum Sort {
+
+        NAME("name"),
+        CATEGORY("category"),
+        PRICE_ASC("price_asc"),
+        PRICE_DESC("price_desc");
+
+        private final String value;
+
+        Sort(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static Sort determineSortType(final String stringValue) throws InvalidSortValueException {
+            for (Sort sortObject : values()) {
+                if (stringValue.equals(sortObject.getValue())) {
+                    return sortObject;
+                }
+            }
+            throw new InvalidSortValueException();
+        }
     }
 }

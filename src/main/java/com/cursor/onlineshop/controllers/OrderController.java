@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
-    // empty line
+
     private final OrderService orderService;
     private final UserService userService;
 
@@ -32,27 +32,23 @@ public class OrderController {
         return orderService.getAll();
     }
 
-
-    // DON'T use 302 FOUND, it's redirection code. Use 200 instead
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable String orderId) {
         Order requestedOrder = orderService.getById(orderId);
 
         // move this method to AuthenticationUtils class
         String requestedOrderUserName = userService.getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
-
         Account requester = (Account) userService
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedOrderUserName) || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
-            return new ResponseEntity<>(requestedOrder, HttpStatus.FOUND);
+            return ResponseEntity.ok(requestedOrder);
         }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    // Return ResponseEntity object
     @PostMapping
-    public Order createOrder(@RequestBody CreateOrderDto newOrderDto) {
-        return orderService.add(newOrderDto);
+    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderDto newOrderDto) {
+        return ResponseEntity.ok(orderService.add(newOrderDto));
     }
 
     @PutMapping("/{orderId}")
@@ -73,9 +69,9 @@ public class OrderController {
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedOrderUserName)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
-            return new ResponseEntity<>(orderService.update(updatedOrderDto), HttpStatus.ACCEPTED);
+            return ResponseEntity.ok(orderService.update(updatedOrderDto));
         }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @DeleteMapping("/{orderId}")
@@ -87,9 +83,9 @@ public class OrderController {
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedOrderUserName)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
-            return new ResponseEntity<>(orderService.delete(orderId), HttpStatus.OK);
+            return ResponseEntity.ok(orderService.delete(orderId));
         }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping("/exec/{orderId}")
@@ -101,8 +97,8 @@ public class OrderController {
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (requester.getUsername().equals(requestedOrderUserName)
                 || requester.getPermissions().contains(UserPermission.ROLE_ADMIN)) {
-            return new ResponseEntity<>(orderService.exec(orderId), HttpStatus.OK);
+            return ResponseEntity.ok(orderService.exec(orderId));
         }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

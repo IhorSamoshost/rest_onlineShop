@@ -29,7 +29,7 @@ import java.util.Set;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
-    // keep empty line after class declaration
+
     private final UserService userService;
     private final JwtRequestFilter jwtRequestFilter;
 
@@ -41,7 +41,7 @@ public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
                 .antMatchers("/auth/register", "/auth/regadmin", "/auth/login").anonymous()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin() // useless here as we don't have login form, because it's restful service
+                .formLogin()//.loginProcessingUrl("/auth/login") // useless here as we don't have login form, because it's restful service
                 .and()
                 .exceptionHandling().disable() // please add exception handling with @ControllerAdvice like here
                 // https://github.com/TarasLavrenyuk/MovieReview/blob/master/src/main/java/com/cursor/moviereview/exceptions/handlers/MovieResponseEntityExceptionHandler.java
@@ -75,7 +75,7 @@ public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfo("Cursor team project #3 \"Online shop\"", "REST API description", "1.0",
+        return new ApiInfo("Cursor project #3 \"Online shop\"", "REST API description", "1.0",
                 null, null, null, null,
                 Collections.emptyList());
     }

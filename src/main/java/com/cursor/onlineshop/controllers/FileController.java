@@ -23,7 +23,7 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping()
-    public ResponseEntity<FileData> create(@RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<FileData> create(@RequestBody MultipartFile file) throws Exception {
         final FileData newFileData = fileService.createFile(file);
         return ResponseEntity
                 .created(URI.create("media/" + newFileData.getFileId()))

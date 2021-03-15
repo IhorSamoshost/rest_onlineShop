@@ -3,6 +3,7 @@ package com.cursor.onlineshop.services;
 import com.cursor.onlineshop.dtos.CategoryDto;
 import com.cursor.onlineshop.dtos.CreateCategoryDto;
 import com.cursor.onlineshop.entities.goods.Category;
+import com.cursor.onlineshop.repositories.ByCriteriaRepo;
 import com.cursor.onlineshop.repositories.CategoryRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepo categoryRepo;
+    private final ByCriteriaRepo byCriteriaRepo;
 
     public Category add(CreateCategoryDto newCategoryDto) {
         return categoryRepo.save(newCategoryDto.toEntity());
@@ -37,7 +39,7 @@ public class CategoryService {
         return categoryRepo.findByCategoryId(categoryId).orElseThrow();
     }
 
-    public List<Category> getAll() {
-        return categoryRepo.findAll();
+    public List<Category> getAll(int limit, int offset, String name, String description) {
+        return byCriteriaRepo.getCategories(limit, offset, name, description);
     }
 }

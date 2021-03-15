@@ -1,6 +1,8 @@
 package com.cursor.onlineshop.entities.user;
 
+import com.cursor.onlineshop.entities.goods.Item;
 import com.cursor.onlineshop.entities.orders.Order;
+import com.cursor.onlineshop.exceptions.InvalidSortValueException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 

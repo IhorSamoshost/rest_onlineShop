@@ -94,7 +94,7 @@ public class FileService {
     public void deleteFile(String fileId) throws FileNotFoundException {
         Optional<FileData> fileOptional = fileRepo.findById(fileId);
         if (fileOptional.isEmpty()) {
-            throw new FileNotFoundException("There is now file with id: " + fileId);
+            throw new FileNotFoundException("There is no file with id: " + fileId);
         }
         FileData fileData = fileOptional.get();
         Path fileToDeletePath = Paths.get(FILE_DIRECTORY.toString() + "/" + fileData.getFileId());

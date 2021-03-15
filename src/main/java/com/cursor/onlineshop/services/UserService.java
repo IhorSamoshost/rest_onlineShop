@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -76,7 +78,7 @@ public class UserService implements UserDetailsService {
                 foundUser.getAge(), foundUser.getPhoneNumber());
     }
 
-    public List<UserDto> getAll() {
+    public List<UserDto> getAll(int limit, int offset) {
         List<User> usersFromDb = userRepo.findAll();
         List<Account> accountsFromDb = accountRepo.findAll();
         List<UserDto> userDtos = new ArrayList<>();
@@ -94,29 +96,78 @@ public class UserService implements UserDetailsService {
                     u.getFirstName(), u.getLastName(), u.getAge(), u.getPhoneNumber());
             userDtos.add(userDto);
         }
-        return userDtos;
+        List<UserDto> sortedDtoListForReturn = new ArrayList<>();
+        List<UserDto> nonNullLastNameDtos = new ArrayList<>();
+        List<UserDto> nonNullFirstNameDtos = new ArrayList<>();
+        List<UserDto> nullBothNamesDtos = new ArrayList<>();
+        for (UserDto uDto : userDtos) {
+            if (uDto.getLastName() != null) {
+                if (uDto.getFirstName() != null) {
+                    sortedDtoListForReturn.add(uDto);
+                } else {
+                    nonNullLastNameDtos.add(uDto);
+                }
+            } else {
+                if (uDto.getFirstName() != null) {
+                    nonNullFirstNameDtos.add(uDto);
+                } else {
+                    nullBothNamesDtos.add(uDto);
+                }
+            }
+        }
+        sortedDtoListForReturn.sort(Comparator.comparing(UserDto::getLastName).thenComparing(UserDto::getFirstName));
+        nonNullLastNameDtos.sort(Comparator.comparing(UserDto::getLastName));
+        nonNullFirstNameDtos.sort(Comparator.comparing(UserDto::getFirstName));
+        sortedDtoListForReturn.addAll(nonNullLastNameDtos);
+        sortedDtoListForReturn.addAll(nonNullFirstNameDtos);
+        sortedDtoListForReturn.addAll(nullBothNamesDtos);
+        return sortedDtoListForReturn.stream().skip(offset).limit(limit).collect(Collectors.toList());
     }
 
-    public UserDto update(UserDto editedUserDto) {
-        Account editedAccount = accountRepo.save(new Account(editedUserDto.getAccountId(),
-                editedUserDto.getUsername(), encoder.encode(editedUserDto.getPassword()),
-                editedUserDto.getEmail(), editedUserDto.getPermissions()));
-        User editedUser = userRepo.save(new User(editedUserDto.getAccountId(),
+    public UserDetails update(String accountId, UserDto editedUserDto, UserDto requestedUserDto) {
+        editedUserDto.setAccountId(accountId);
+        if (editedUserDto.getUsername() == null) {
+            editedUserDto.setUsername(requestedUserDto.getUsername());
+        }
+        if (editedUserDto.getEmail() == null) {
+            editedUserDto.setEmail(requestedUserDto.getEmail());
+        }
+        if (editedUserDto.getPermissions() == null) {
+            editedUserDto.setPermissions(requestedUserDto.getPermissions());
+        }
+        if (editedUserDto.getFirstName() == null) {
+            editedUserDto.setFirstName(requestedUserDto.getFirstName());
+        }
+        if (editedUserDto.getLastName() == null) {
+            editedUserDto.setLastName(requestedUserDto.getLastName());
+        }
+        if (editedUserDto.getAge() == null) {
+            editedUserDto.setAge(requestedUserDto.getAge());
+        }
+        if (editedUserDto.getPhoneNumber() == null) {
+            editedUserDto.setPhoneNumber(requestedUserDto.getPhoneNumber());
+        }
+        Account editedAccount;
+        if (editedUserDto.getPassword() == null) {
+            editedAccount = accountRepo.save(new Account(editedUserDto.getAccountId(),
+                    editedUserDto.getUsername(), requestedUserDto.getPassword(),
+                    editedUserDto.getEmail(), editedUserDto.getPermissions()));
+        } else {
+            editedAccount = accountRepo.save(new Account(editedUserDto.getAccountId(),
+                    editedUserDto.getUsername(), encoder.encode(editedUserDto.getPassword()),
+                    editedUserDto.getEmail(), editedUserDto.getPermissions()));
+        }
+        userRepo.save(new User(editedUserDto.getAccountId(),
                 editedUserDto.getFirstName(), editedUserDto.getLastName(),
                 editedUserDto.getAge(), editedUserDto.getPhoneNumber()));
-        return new UserDto(editedAccount.getAccountId(), editedAccount.getUsername(),
-                editedAccount.getPassword(), editedAccount.getEmail(),
-                editedAccount.getPermissions(), editedUser.getFirstName(),
-                editedUser.getLastName(), editedUser.getAge(), editedUser.getPhoneNumber());
+        return editedAccount;
     }
 
-    public String delete(String deletedAccountId) {
+    public boolean delete(String deletedAccountId) {
         accountRepo.deleteById(deletedAccountId);
         userRepo.deleteById(deletedAccountId);
-        return accountRepo.findById(deletedAccountId).isPresent()
-                || userRepo.findById(deletedAccountId).isPresent() ?
-                String.format("Somthing went wrong, user with id=%s is not deleted!", deletedAccountId) :
-                String.format("User with id=%s is succesfully deleted", deletedAccountId);
+        return accountRepo.findById(deletedAccountId).isEmpty()
+                || userRepo.findById(deletedAccountId).isEmpty();
     }
 
     public Account getByUsername(String userName) {
