@@ -41,10 +41,9 @@ public class AppConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
                 .antMatchers("/auth/register", "/auth/regadmin", "/auth/login").anonymous()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()//.loginProcessingUrl("/auth/login") // useless here as we don't have login form, because it's restful service
+                .formLogin()
                 .and()
-                .exceptionHandling().disable() // please add exception handling with @ControllerAdvice like here
-                // https://github.com/TarasLavrenyuk/MovieReview/blob/master/src/main/java/com/cursor/moviereview/exceptions/handlers/MovieResponseEntityExceptionHandler.java
+                .exceptionHandling().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

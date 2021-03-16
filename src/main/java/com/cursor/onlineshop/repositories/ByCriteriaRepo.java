@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.SingularAttribute;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,7 +28,6 @@ public class ByCriteriaRepo {
     ) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Category> cq = cb.createQuery(Category.class);
-
         Root<Category> category = cq.from(Category.class);
         List<Predicate> predicates = new LinkedList<>();
         if (name != null && !name.isBlank()) {
@@ -43,7 +39,6 @@ public class ByCriteriaRepo {
                     cb.like(category.get("description"), "%" + description + "%");
             predicates.add(categoryDescriptionPredicate);
         }
-
         cq.where(predicates.toArray(new Predicate[0]));
         cq.orderBy(cb.asc(category.get("name")));
         TypedQuery<Category> query = em.createQuery(cq).setMaxResults(limit).setFirstResult(offset);
@@ -61,13 +56,6 @@ public class ByCriteriaRepo {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Item> cq = cb.createQuery(Item.class);
         Root<Item> item = cq.from(Item.class);
-
-//        Metamodel m = em.getMetamodel();
-//        EntityType<Item> Item_ = m.entity(Item.class);
-//        CriteriaQuery<Category> categoryCriteriaQuery = cb.createQuery(Category.class);
-//        Root<Item> itemCategoryQuery = categoryCriteriaQuery.from(Item_);
-
-
         List<Predicate> predicates = new LinkedList<>();
         if (category != null && !category.isBlank()) {
             Subquery<Category> subquery = cq.subquery(Category.class);
@@ -86,9 +74,7 @@ public class ByCriteriaRepo {
                     cb.like(item.get("description"), "%" + description + "%");
             predicates.add(itemDescriptionPredicate);
         }
-
         cq.where(predicates.toArray(new Predicate[0]));
-
         switch (sort) {
             case NAME:
                 cq.orderBy(cb.asc(item.get("name")));
@@ -102,14 +88,10 @@ public class ByCriteriaRepo {
                 cq.orderBy(cb.asc(item.get("price")));
                 query = em.createQuery(cq).setMaxResults(limit).setFirstResult(offset);
                 return query.getResultList();
-//                return movieDao.findAllByMovieNameAndDescriptionLikeOrderByRate_avgRateValueAsc(
-//                        name, "%" + description + "%").stream().skip(offset).limit(limit).collect(Collectors.toList());
             case PRICE_DESC:
                 cq.orderBy(cb.desc(item.get("price")));
                 query = em.createQuery(cq).setMaxResults(limit).setFirstResult(offset);
                 return query.getResultList();
-//                return movieDao.findAllByMovieNameAndDescriptionLikeOrderByRate_avgRateValueDesc(
-//                        name, "%" + description + "%").stream().skip(offset).limit(limit).collect(Collectors.toList());
             default:
                 throw new InvalidSortValueException();
         }

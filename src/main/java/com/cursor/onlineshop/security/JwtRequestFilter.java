@@ -16,7 +16,7 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-    // empty line after class declaration
+
     private final UserDetailsService userDetailsService;
     private final JwtUtils jwtUtil;
 

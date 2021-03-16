@@ -25,7 +25,6 @@ public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
 
-    // add limit, offset and sort params
     @GetMapping
     @Secured("ROLE_ADMIN")
     public List<Order> getAll() {
@@ -35,8 +34,6 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable String orderId) {
         Order requestedOrder = orderService.getById(orderId);
-
-        // move this method to AuthenticationUtils class
         String requestedOrderUserName = userService.getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
         Account requester = (Account) userService
                 .loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -54,15 +51,8 @@ public class OrderController {
     @PutMapping("/{orderId}")
     public ResponseEntity<Order> editOrder(@PathVariable String orderId, @RequestBody OrderDto updatedOrderDto)
             throws ParseException {
-
-        // this line should be in service
         updatedOrderDto.setOrderId(orderId);
-
-        // this line should be in service
         Order requestedOrder = orderService.getById(orderId);
-
-        // move security checks to separate methods/class and throw exception there if something is wrong
-        // use @ControllerAdvice to process exceptions
         String requestedOrderUserName = userService
                 .getAccountById(requestedOrder.getUser().getAccountId()).getUsername();
         Account requester = (Account) userService

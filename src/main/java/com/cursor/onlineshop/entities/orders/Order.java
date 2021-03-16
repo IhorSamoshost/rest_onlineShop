@@ -39,7 +39,7 @@ public class Order {
     }
 
     public void dismissOrderItems() {
-        orderItems.forEach(oi->oi.setOrder(null));
+        orderItems.forEach(oi -> oi.setOrder(null));
         orderItems.clear();
     }
 
